@@ -1,6 +1,7 @@
 """
     CRABQuality - Entry module for CRAB testing functionality
 """
+from functools import wraps
 import nose
 from nose.tools import with_setup
 import os
@@ -12,6 +13,18 @@ import tempfile
 import time
 import CRABInterface.CRABServerBase as CRABServerBase
 
+def withTemporaryDirectory(func, delete=True):
+    @wraps
+    def wrapper(*args, **kwargs):
+        workDir = tempfile.mkdtemp(prefix="crab3-testing")
+        try:
+            # I'mn not sure, but I think this isn't thread-safe
+            func.workDir = workDir
+            return func(*args, **kwargs)
+        finally:
+            if delete:
+                shutil.rmtree(workDir)
+    return wrapper
 def getTestRoot():
     return os.path.join(CRABServerBase.getCRABServerBase(),
                         'test', 'python')

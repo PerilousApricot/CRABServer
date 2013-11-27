@@ -47,7 +47,7 @@ systems = \
 
 # These repos come from git clone, so we need to speicify the repo and ref
 DEFAULT_CMSDIST_REPO = "git@github.com:cms-sw/cmsdist.git"
-DEFAULT_CMSDIST_REF = "comp"
+DEFAULT_CMSDIST_REF = "comp_gcc481"
 DEFAULT_PKGTOOLS_REPO = "git@github.com:cms-sw/cmsdist.git"
 DEFAULT_PKGTOOLS_REF = "V00-21-XX"
 
@@ -79,27 +79,24 @@ class PackageCommand(Command):
 
     def initialize_options(self):
         self.targets = "CRABClient,CRABServer,TaskWorker"
-        # I'll need to fix things later for the crabserver ref
         self.crabServerPath = None
-        self.crabClientPath = DEFAULT_CRABCLIENT
-        self.wmCorePath = DEFAULT_WMCORE
-        self.pkgToolsRepo = DEFAULT_PKGTOOLS_REPO
-        self.pkgToolsRef = DEFAULT_PKGTOOLS_REF
-        self.cmsdistRepo = DEFAULT_CMSDIST_REPO
-        self.cmsdistRef  = DEFAULT_CMSDIST_REF
+        self.crabClientPath = None
+        self.wmCorePath = None
+        self.pkgToolsRepo = None
+        self.pkgToolsRef = None
+        self.cmsdistRepo = None
+        self.cmsdistRef  = None
 
     def finalize_options(self):
-        if self.crabServerPath:
-            self.crabCCServerPath = self.crabServerPath
-            self.crabCSServerPath = self.crabServerPath
-        else:
-            self.crabCCServerPath = DEFAULT_CC_CRABSERVER
-            self.crabCSServerPath = DEFAULT_CS_CRABSERVER
+        pass
 
     def run(self):
-        """
-            Need to do a few things here:
-        """
+        # Import here because setup.py won't always have the right deps
+        import CRABPackage
+        argTitle = ['targets', 'crabServerPath', 'crabClientPath', 'wmCorePath',
+                    'pkgToolsRepo', 'pkgToolsRef', 'cmsdistRepo', 'cmsdistRef']
+        args = dict((k, getattr(self, k)) for k in argTitle)
+        sys.exit(CRABPackage.package(**args ))
 
 def get_relative_path():
   return os.path.dirname(os.path.abspath(os.path.join(os.getcwd(), sys.argv[0])))
@@ -249,6 +246,7 @@ setup(name = 'crabserver',
       maintainer_email = 'hn-cms-crabdevelopment@cern.ch',
       cmdclass = { 'build_system': BuildCommand,
                    'install_system': InstallCommand,
+                   'package_system': PackageCommand,
                    'test' : TestCommand },
       #include_package_data=True,
       # base directory for all the packages
