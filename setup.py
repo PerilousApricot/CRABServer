@@ -66,6 +66,7 @@ class PackageCommand(Command):
         repositories with either different GH tags or a local directory.
         """
     user_options = []
+    user_options.append(("workDir=", None, "Path to use as a scratch directory"))
     user_options.append(("targets=", None,
                         "Package specified systems (default: CRABClient,CRABServer,TaskWorker)"))
     user_options.append(("crabServerPath=", None, "Override CRABServer repo location"))
@@ -79,6 +80,7 @@ class PackageCommand(Command):
 
     def initialize_options(self):
         self.targets = "CRABClient,CRABServer,TaskWorker"
+        self.workDir = os.path.join(os.getcwd(), "crab-packaging")
         self.crabServerPath = None
         self.crabClientPath = None
         self.wmCorePath = None
@@ -94,7 +96,8 @@ class PackageCommand(Command):
         # Import here because setup.py won't always have the right deps
         import CRABPackage
         argTitle = ['targets', 'crabServerPath', 'crabClientPath', 'wmCorePath',
-                    'pkgToolsRepo', 'pkgToolsRef', 'cmsdistRepo', 'cmsdistRef']
+                    'pkgToolsRepo', 'pkgToolsRef', 'cmsdistRepo', 'cmsdistRef',
+                    'workDir']
         args = dict((k, getattr(self, k)) for k in argTitle)
         sys.exit(CRABPackage.package(**args ))
 

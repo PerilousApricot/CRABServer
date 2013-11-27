@@ -20,7 +20,7 @@ DEFAULT_CC_CRABSERVER = "git://github.com/dmwm/CRABServer.git?obj=master/%{crabs
 
 
 def package(targets, crabServerPath, crabClientPath, wmCorePath, pkgToolsRepo,
-            pkgToolsRef, cmsdistRepo, cmsdistRef):
+            pkgToolsRef, cmsdistRepo, cmsdistRef, workDir):
     """
     Entry function from setup.py
         Need to do a few things here:
@@ -31,8 +31,6 @@ def package(targets, crabServerPath, crabClientPath, wmCorePath, pkgToolsRepo,
             4) run cmsbuild
     """
     try:
-        # FIXME: make this configurable
-        workDir = os.path.abspath("crabserver-package")
         if not os.path.exists(workDir):
             os.makedirs(workDir)
 
