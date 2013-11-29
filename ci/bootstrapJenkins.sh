@@ -94,7 +94,7 @@ if [ $ENABLECRABCLIENT -eq 1 ]; then
 fi
 if [ $ENABLEWMCORE -eq 1 ]; then
     checkBare WMCore $WMCOREREPO
-    getRepo $WMCOREREPO $TARGET/WMCore $WMCOREREPO WMCore
+    getRepo $WMCOREREPO $TARGET/WMCore $WMCOREREF WMCore
 fi
 echo "Sourcing subsystems..."
 for SUBSYSTEM in crabclient crabserver crabtaskworker wmcore-devtools; do
