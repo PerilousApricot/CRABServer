@@ -20,7 +20,8 @@ DEFAULT_CC_CRABSERVER = "git://github.com/dmwm/CRABServer.git?obj=master/%{crabs
 
 
 def package(targets, crabServerPath, crabClientPath, wmCorePath, pkgToolsRepo,
-            pkgToolsRef, cmsdistRepo, cmsdistRef, workDir):
+            pkgToolsRef, cmsdistRepo, cmsdistRef, workDir,
+            arch='slc5_amd64_gcc461'):
     """
     Entry function from setup.py
         Need to do a few things here:
@@ -34,6 +35,7 @@ def package(targets, crabServerPath, crabClientPath, wmCorePath, pkgToolsRepo,
         if not os.path.exists(workDir):
             os.makedirs(workDir)
 
+        # TODO I feel like I had a reason for doing this....
         targets = replaceIfNone(targets, DEFAULT_TARGETS)
         cmsdistRepo = replaceIfNone(cmsdistRepo, DEFAULT_CMSDIST_REPO)
         cmsdistRef = replaceIfNone(cmsdistRef, DEFAULT_CMSDIST_REF)
@@ -53,22 +55,24 @@ def package(targets, crabServerPath, crabClientPath, wmCorePath, pkgToolsRepo,
                       crabServerPath_CC, crabClientPath, wmCorePath)
 
         # run the cmsbuild
-        buildSpecs(targets, workDir, pkgToolsCheckout, cmsdistCheckout)
+        buildSpecs(targets, workDir, arch, pkgToolsCheckout, cmsdistCheckout)
     finally:
         pass
 
-def buildSpecs(targets, workDir, pkgToolsCheckout, cmsdistCheckout):
+def buildSpecs(targets, workDir, arch, pkgToolsCheckout, cmsdistCheckout):
     targetMap = { "CRABServer" : "crabserver",
                   "CRABClient" : "crabclient",
                   "TaskWorker" : "crabtaskworker" }
     args = { 'targetList' : " ".join([targetMap[x] for x in targets.split(",")]),
              'pkgTools'   : pkgToolsCheckout,
              'cmsdist'    : cmsdistCheckout,
-             'workDir'    : os.path.join(workDir, 'build') }
+             'workDir'    : os.path.join(workDir, 'build'),
+             'arch'       : arch }
 
     cmd = "%(pkgTools)s/cmsBuild -j 10 --work-dir %(workDir)s -c %(cmsdist)s build %(targetList)s "
-    cmd += "--repo comp.pre --arch slc6_amd64_gcc481"
+    cmd += "--repo comp.pre --arch %(arch)"
     print "Executing %s" % (cmd % args)
+    
 
 def getRepos(workDir, pkgToolsRepo, pkgToolsRef, cmsdistRepo, cmsdistRef):
     """
