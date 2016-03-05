@@ -1263,11 +1263,13 @@ def main():
     source_site = str(get_from_job_report('phedex_node', 'unknown'))
     ## Check if Exe Site == Dest Site, if true - stageout directly
     if source_site == dest_site:
-        # Make sure two policies are used (local, remote) and we can change it
-        # It can be that only one policy is specified. See TW configuration file.
-        if stageout_policy == ["local", "remote"]:
+        # If local is in the stageout_policy, but not the first choice, swap
+        # it around to attempt local stageout
+        if stageout_policy[0] != "local" and "local" in stageout_policy:
             print('Job execution site is the same as destination site. Changing stageout policy.')
-            stageout_policy = ["remote", "local"]
+            while "local" in stageout_policy:
+                stageout_policy.remove("local")
+            stageout_policy.insert(0, "local")
             print('New stageout policy: %s' % (", ".join(stageout_policy)))
         else:
             print('Not rewriting stageout policy. Continue with %s stageout policy.' % (", ".join(stageout_policy)))
