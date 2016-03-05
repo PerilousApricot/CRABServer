@@ -425,7 +425,7 @@ def perform_stageout(local_stageout_mgr, direct_stageout_impl, \
     """
     Wrapper for local and direct stageouts.
     """
-    if policy == 'local':
+    if policy == 'local' or (source_site == dest_site):
         retval, retmsg = perform_local_stageout(local_stageout_mgr, \
                                                 source_file, dest_temp_lfn, \
                                                 dest_lfn, dest_site, \
